@@ -75,15 +75,41 @@ export function buildIcsDataUrl(opts: IcsOpts): string {
     .replace(/[-:]|\.\d+/g, '')
     .slice(0, 15) + 'Z'
 
+  const TZID = 'America/New_York'
+  const vtimezone = isAllDay
+    ? []
+    : [
+        'BEGIN:VTIMEZONE',
+        `TZID:${TZID}`,
+        'BEGIN:DAYLIGHT',
+        'TZOFFSETFROM:-0500',
+        'TZOFFSETTO:-0400',
+        'TZNAME:EDT',
+        'DTSTART:19700308T020000',
+        'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU',
+        'END:DAYLIGHT',
+        'BEGIN:STANDARD',
+        'TZOFFSETFROM:-0400',
+        'TZOFFSETTO:-0500',
+        'TZNAME:EST',
+        'DTSTART:19701101T020000',
+        'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU',
+        'END:STANDARD',
+        'END:VTIMEZONE',
+      ]
+
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//central-flock//rsvp//EN',
+    ...vtimezone,
     'BEGIN:VEVENT',
     `UID:${escapeIcs(opts.uid)}@rsvp`,
     `DTSTAMP:${dtstamp}`,
-    isAllDay ? `DTSTART;VALUE=DATE:${dtStart}` : `DTSTART:${dtStart}`,
-    isAllDay ? `DTEND;VALUE=DATE:${dtEnd}` : `DTEND:${dtEnd}`,
+    isAllDay
+      ? `DTSTART;VALUE=DATE:${dtStart}`
+      : `DTSTART;TZID=${TZID}:${dtStart}`,
+    isAllDay ? `DTEND;VALUE=DATE:${dtEnd}` : `DTEND;TZID=${TZID}:${dtEnd}`,
     `SUMMARY:${escapeIcs(opts.title)}`,
     ...(opts.location ? [`LOCATION:${escapeIcs(opts.location)}`] : []),
     'END:VEVENT',
