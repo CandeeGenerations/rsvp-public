@@ -1,6 +1,6 @@
 import {Card} from '@/components/ui/Card'
 import {type RsvpGetResponse, type RsvpStatus} from '@/lib/api'
-import {formatEventDate, formatEventTime} from '@/lib/format'
+import {formatEventDate, formatEventTimeRange} from '@/lib/format'
 
 const STATUS_LABEL: Record<RsvpStatus, string> = {
   yes: 'Yes',
@@ -16,7 +16,7 @@ export function PastEventCard({data}: {data: RsvpGetResponse}) {
       <p className="text-base text-muted-foreground">
         {data.eventTitle}
         {data.eventDate && ` · ${formatEventDate(data.eventDate)}`}
-        {data.eventTime && ` ${formatEventTime(data.eventTime)}`}
+        {data.eventTime && ` ${formatEventTimeRange(data.eventTime, data.eventEndTime)}`}
       </p>
       <div className="rounded-2xl bg-muted px-4 py-3 space-y-1">
         <p className="text-sm text-muted-foreground">Your response</p>

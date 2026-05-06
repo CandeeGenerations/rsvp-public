@@ -3,7 +3,7 @@ import {Card} from '@/components/ui/Card'
 import {Textarea} from '@/components/ui/Textarea'
 import {HeadcountStepper} from '@/components/HeadcountStepper'
 import {type RsvpGetResponse, type RsvpStatus} from '@/lib/api'
-import {formatEventDate, formatEventTime} from '@/lib/format'
+import {formatEventDate, formatEventTimeRange} from '@/lib/format'
 import {useState} from 'react'
 
 interface Props {
@@ -51,7 +51,8 @@ export function RsvpForm({data, submitting, onSubmit}: Props) {
           <p className="text-base text-muted-foreground">
             {data.eventDate && formatEventDate(data.eventDate)}
             {data.eventTime &&
-              (data.eventDate ? ' at ' : '') + formatEventTime(data.eventTime)}
+              (data.eventDate ? ' at ' : '') +
+                formatEventTimeRange(data.eventTime, data.eventEndTime)}
           </p>
         )}
       </header>

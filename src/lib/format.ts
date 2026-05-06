@@ -17,3 +17,10 @@ export function formatEventTime(time: string | null): string {
   const h12 = hh % 12 === 0 ? 12 : hh % 12
   return `${h12}:${mm.toString().padStart(2, '0')} ${ampm}`
 }
+
+export function formatEventTimeRange(start: string | null, end: string | null): string {
+  const s = formatEventTime(start)
+  if (!s) return ''
+  if (!end || end <= (start ?? '')) return s
+  return `${s} – ${formatEventTime(end)}`
+}

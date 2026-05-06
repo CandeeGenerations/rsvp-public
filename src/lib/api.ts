@@ -7,8 +7,7 @@ export interface RsvpGetResponse {
   eventTitle: string
   eventDate: string | null
   eventTime: string | null
-  standaloneEndTime: string | null
-  calendarEventEndDate: string | null
+  eventEndTime: string | null
   status: RsvpStatus
   headcount: number | null
   note: string | null

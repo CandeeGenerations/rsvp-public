@@ -1,7 +1,7 @@
 import {Button} from '@/components/ui/Button'
 import {Card} from '@/components/ui/Card'
 import {type RsvpGetResponse} from '@/lib/api'
-import {formatEventDate, formatEventTime} from '@/lib/format'
+import {formatEventDate, formatEventTimeRange} from '@/lib/format'
 import {buildIcsDataUrl} from '@/lib/ics'
 
 interface Props {
@@ -10,25 +10,15 @@ interface Props {
   onEdit: () => void
 }
 
-function resolveEnd(data: RsvpGetResponse): {endDate: string | null; endTime: string | null} {
-  if (data.standaloneEndTime && data.eventDate) {
-    return {endDate: data.eventDate, endTime: data.standaloneEndTime}
-  }
-  if (data.calendarEventEndDate) {
-    const iso = data.calendarEventEndDate
-    return {
-      endDate: iso.slice(0, 10),
-      endTime: iso.length >= 16 ? iso.slice(11, 16) : null,
-    }
-  }
-  return {endDate: null, endTime: null}
-}
-
 export function ConfirmationCard({data, token, onEdit}: Props) {
   const dateStr = formatEventDate(data.eventDate)
-  const timeStr = formatEventTime(data.eventTime)
+  const timeStr = formatEventTimeRange(data.eventTime, data.eventEndTime)
 
-  const end = resolveEnd(data)
+  // Drop a malformed end time (<= start) so the .ics falls back to start + 1h.
+  const safeEndTime =
+    data.eventTime && data.eventEndTime && data.eventEndTime > data.eventTime
+      ? data.eventEndTime
+      : null
   const icsHref = data.eventDate
     ? buildIcsDataUrl({
         title: data.eventTitle,
@@ -36,8 +26,8 @@ export function ConfirmationCard({data, token, onEdit}: Props) {
         time: data.eventTime,
         uid: token.slice(0, 12),
         location: 'Central Baptist Church, 13910 Minnieville Rd, Woodbridge, VA 22193',
-        endDate: end.endDate,
-        endTime: end.endTime,
+        endDate: safeEndTime ? data.eventDate : null,
+        endTime: safeEndTime,
       })
     : null
 
