@@ -4,10 +4,12 @@ import {Textarea} from '@/components/ui/Textarea'
 import {HeadcountStepper} from '@/components/HeadcountStepper'
 import {type RsvpGetResponse, type RsvpStatus} from '@/lib/api'
 import {formatEventDate, formatEventTimeRange} from '@/lib/format'
+import {buildEventIcsHref} from '@/lib/ics'
 import {useState} from 'react'
 
 interface Props {
   data: RsvpGetResponse
+  token: string
   submitting: boolean
   onSubmit: (body: {
     status: 'yes' | 'no' | 'maybe'
@@ -16,7 +18,7 @@ interface Props {
   }) => void
 }
 
-export function RsvpForm({data, submitting, onSubmit}: Props) {
+export function RsvpForm({data, token, submitting, onSubmit}: Props) {
   const initialStatus: RsvpStatus =
     data.status === 'no_response' ? 'no_response' : data.status
   const [status, setStatus] = useState<RsvpStatus>(initialStatus)
@@ -37,6 +39,10 @@ export function RsvpForm({data, submitting, onSubmit}: Props) {
 
   const submitLabel =
     data.status === 'no_response' ? 'Submit' : 'Update response'
+
+  const icsHref = buildEventIcsHref(data, token)
+  const showCalendar =
+    (data.status === 'yes' || data.status === 'maybe') && icsHref
 
   return (
     <Card className="space-y-6">
@@ -119,9 +125,22 @@ export function RsvpForm({data, submitting, onSubmit}: Props) {
         </p>
       </div>
 
-      <Button size="lg" disabled={!canSubmit} onClick={submit}>
-        {submitting ? 'Sending…' : submitLabel}
-      </Button>
+      <div className="flex flex-col gap-3">
+        <Button size="lg" disabled={!canSubmit} onClick={submit}>
+          {submitting ? 'Sending…' : submitLabel}
+        </Button>
+        {showCalendar && (
+          <a
+            href={icsHref}
+            download={`${data.eventTitle}.ics`}
+            className="contents"
+          >
+            <Button size="lg" variant="outline">
+              + Add to Calendar
+            </Button>
+          </a>
+        )}
+      </div>
     </Card>
   )
 }

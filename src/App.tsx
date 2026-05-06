@@ -90,6 +90,7 @@ export default function App() {
         {(view.kind === 'form' || view.kind === 'submitting') && (
           <RsvpForm
             data={view.data}
+            token={token!}
             submitting={view.kind === 'submitting'}
             onSubmit={handleSubmit}
           />

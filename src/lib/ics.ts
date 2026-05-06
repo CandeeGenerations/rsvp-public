@@ -34,6 +34,30 @@ export interface IcsOpts {
   endTime?: string | null // 'HH:MM'
 }
 
+interface EventLike {
+  eventTitle: string
+  eventDate: string | null
+  eventTime: string | null
+  eventEndTime: string | null
+}
+
+export function buildEventIcsHref(data: EventLike, token: string): string | null {
+  if (!data.eventDate) return null
+  const safeEndTime =
+    data.eventTime && data.eventEndTime && data.eventEndTime > data.eventTime
+      ? data.eventEndTime
+      : null
+  return buildIcsDataUrl({
+    title: data.eventTitle,
+    date: data.eventDate,
+    time: data.eventTime,
+    uid: token.slice(0, 12),
+    location: 'Central Baptist Church, 13910 Minnieville Rd, Woodbridge, VA 22193',
+    endDate: safeEndTime ? data.eventDate : null,
+    endTime: safeEndTime,
+  })
+}
+
 export function buildIcsDataUrl(opts: IcsOpts): string {
   const dateCompact = opts.date.replace(/-/g, '')
   const isAllDay = !opts.time
