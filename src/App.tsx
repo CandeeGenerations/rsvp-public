@@ -70,6 +70,18 @@ export default function App() {
   return (
     <main className="min-h-svh bg-background px-4 py-6 sm:py-10">
       <div className="mx-auto w-full max-w-md">
+        <div className="mb-6 flex justify-center">
+          <picture>
+            <source srcSet="/logos/default-monochrome-white.svg" media="(prefers-color-scheme: dark)" />
+            <img
+              src="/logos/default-monochrome.svg"
+              alt="Central Flock"
+              className="h-12 w-auto"
+              width={332}
+              height={48}
+            />
+          </picture>
+        </div>
         {view.kind === 'loading' && (
           <Card className="text-center text-muted-foreground py-12">Loading…</Card>
         )}

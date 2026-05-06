@@ -10,16 +10,34 @@ interface Props {
   onEdit: () => void
 }
 
+function resolveEnd(data: RsvpGetResponse): {endDate: string | null; endTime: string | null} {
+  if (data.standaloneEndTime && data.eventDate) {
+    return {endDate: data.eventDate, endTime: data.standaloneEndTime}
+  }
+  if (data.calendarEventEndDate) {
+    const iso = data.calendarEventEndDate
+    return {
+      endDate: iso.slice(0, 10),
+      endTime: iso.length >= 16 ? iso.slice(11, 16) : null,
+    }
+  }
+  return {endDate: null, endTime: null}
+}
+
 export function ConfirmationCard({data, token, onEdit}: Props) {
   const dateStr = formatEventDate(data.eventDate)
   const timeStr = formatEventTime(data.eventTime)
 
+  const end = resolveEnd(data)
   const icsHref = data.eventDate
     ? buildIcsDataUrl({
         title: data.eventTitle,
         date: data.eventDate,
         time: data.eventTime,
         uid: token.slice(0, 12),
+        location: 'Central Baptist Church, 13910 Minnieville Rd, Woodbridge, VA 22193',
+        endDate: end.endDate,
+        endTime: end.endTime,
       })
     : null
 
@@ -27,10 +45,10 @@ export function ConfirmationCard({data, token, onEdit}: Props) {
 
   const headline =
     data.status === 'yes'
-      ? `You're going to ${data.eventTitle}`
+      ? `You're going to the ${data.eventTitle}!`
       : data.status === 'maybe'
-        ? `You said maybe to ${data.eventTitle}`
-        : `You can't make ${data.eventTitle}`
+        ? `You said maybe to the ${data.eventTitle}.`
+        : `You can't make it to the ${data.eventTitle}.`
 
   return (
     <Card className="space-y-5">
@@ -59,7 +77,11 @@ export function ConfirmationCard({data, token, onEdit}: Props) {
 
       <div className="flex flex-col gap-3 pt-2">
         {showCalendar && (
-          <a href={icsHref} download={`${data.eventTitle}.ics`} className="contents">
+          <a
+            href={icsHref}
+            download={`${data.eventTitle}.ics`}
+            className="contents"
+          >
             <Button size="lg">+ Add to Calendar</Button>
           </a>
         )}

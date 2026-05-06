@@ -9,11 +9,16 @@ import {useState} from 'react'
 interface Props {
   data: RsvpGetResponse
   submitting: boolean
-  onSubmit: (body: {status: 'yes' | 'no' | 'maybe'; headcount: number | null; note: string | null}) => void
+  onSubmit: (body: {
+    status: 'yes' | 'no' | 'maybe'
+    headcount: number | null
+    note: string | null
+  }) => void
 }
 
 export function RsvpForm({data, submitting, onSubmit}: Props) {
-  const initialStatus: RsvpStatus = data.status === 'no_response' ? 'no_response' : data.status
+  const initialStatus: RsvpStatus =
+    data.status === 'no_response' ? 'no_response' : data.status
   const [status, setStatus] = useState<RsvpStatus>(initialStatus)
   const [headcount, setHeadcount] = useState<number>(data.headcount ?? 1)
   const [note, setNote] = useState<string>(data.note ?? '')
@@ -30,7 +35,8 @@ export function RsvpForm({data, submitting, onSubmit}: Props) {
     })
   }
 
-  const submitLabel = data.status === 'no_response' ? 'Submit' : 'Update response'
+  const submitLabel =
+    data.status === 'no_response' ? 'Submit' : 'Update response'
 
   return (
     <Card className="space-y-6">
@@ -38,11 +44,14 @@ export function RsvpForm({data, submitting, onSubmit}: Props) {
         <h1 className="text-2xl font-semibold">
           {data.personFirstName ? `Hi ${data.personFirstName}!` : 'RSVP'}
         </h1>
-        <p className="text-lg text-foreground">{data.eventTitle}</p>
+        <p className="text-lg text-foreground">
+          Will you be at the {data.eventTitle}?
+        </p>
         {(data.eventDate || data.eventTime) && (
           <p className="text-base text-muted-foreground">
             {data.eventDate && formatEventDate(data.eventDate)}
-            {data.eventTime && (data.eventDate ? ' at ' : '') + formatEventTime(data.eventTime)}
+            {data.eventTime &&
+              (data.eventDate ? ' at ' : '') + formatEventTime(data.eventTime)}
           </p>
         )}
       </header>
@@ -83,7 +92,12 @@ export function RsvpForm({data, submitting, onSubmit}: Props) {
       {headcountVisible && (
         <div className="space-y-3">
           <p className="text-sm font-medium text-center">How many people?</p>
-          <HeadcountStepper value={headcount} onChange={setHeadcount} min={1} max={10} />
+          <HeadcountStepper
+            value={headcount}
+            onChange={setHeadcount}
+            min={1}
+            max={10}
+          />
         </div>
       )}
 
@@ -99,7 +113,9 @@ export function RsvpForm({data, submitting, onSubmit}: Props) {
           rows={3}
           maxLength={280}
         />
-        <p className="text-xs text-muted-foreground text-right">{note.length}/280</p>
+        <p className="text-xs text-muted-foreground text-right">
+          {note.length}/280
+        </p>
       </div>
 
       <Button size="lg" disabled={!canSubmit} onClick={submit}>
