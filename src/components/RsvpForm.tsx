@@ -98,7 +98,9 @@ export function RsvpForm({data, token, submitting, onSubmit}: Props) {
 
       {headcountVisible && (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-center">How many people?</p>
+          <p className="text-sm font-medium text-center">
+            How many people (including yourself)?
+          </p>
           <HeadcountStepper
             value={headcount}
             onChange={setHeadcount}
