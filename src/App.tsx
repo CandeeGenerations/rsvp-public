@@ -22,6 +22,9 @@ function readToken(): string | null {
 }
 
 export default function App() {
+  if (window.location.pathname === '/sentry-test') {
+    throw new Error('Sentry test error from /sentry-test')
+  }
   const [token] = useState<string | null>(readToken())
   const [view, setView] = useState<ViewState>({kind: 'loading'})
 
