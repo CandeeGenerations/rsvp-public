@@ -4,6 +4,7 @@ import {PastEventCard} from '@/components/PastEventCard'
 import {RsvpForm} from '@/components/RsvpForm'
 import {Card} from '@/components/ui/Card'
 import {RsvpApiError, type RsvpGetResponse, getRsvp, postRsvp} from '@/lib/api'
+import {Sentry} from '@/lib/sentry'
 import {useEffect, useState} from 'react'
 
 type ViewState =
@@ -35,11 +36,11 @@ export default function App() {
         else setView({kind: 'form', data})
       })
       .catch((err) => {
-        if (err instanceof RsvpApiError && err.status === 404) {
-          setView({kind: 'invalid'})
-        } else {
-          setView({kind: 'invalid'})
+        const status = err instanceof RsvpApiError ? err.status : 0
+        if (status !== 404) {
+          Sentry.captureException(err, {tags: {source: 'getRsvp'}})
         }
+        setView({kind: 'invalid'})
       })
   }, [token])
 
@@ -61,6 +62,7 @@ export default function App() {
         setView({kind: 'past', data: {...view.data, isPast: true}})
         return
       }
+      Sentry.captureException(err, {tags: {source: 'postRsvp'}})
       // Roll back to the form so the user can retry.
       setView({kind: 'form', data: view.data})
       alert(err instanceof Error ? err.message : 'Something went wrong')
