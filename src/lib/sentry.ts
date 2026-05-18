@@ -36,7 +36,7 @@ export function initSentry(): void {
     release,
     tracesSampleRate: 1.0,
     sendDefaultPii: false,
-    ignoreErrors: ['AbortError', 'Unauthorized'],
+    ignoreErrors: ['AbortError', 'Unauthorized', 'Invalid password'],
     beforeSend: scrubEvent,
     beforeSendTransaction: scrubEvent,
   })
