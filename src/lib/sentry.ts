@@ -35,7 +35,11 @@ export function initSentry(): void {
     environment,
     release,
     tracesSampleRate: 1.0,
-    sendDefaultPii: false,
+    // v11 defaults: keep `beforeSendTransaction` running, keep v10 issue grouping
+    traceLifecycle: 'static',
+    attachStacktrace: false,
+    // Replaces v10 `sendDefaultPii: false`; without it v11 infers user IPs
+    dataCollection: {userInfo: false, cookies: false, httpBodies: []},
     ignoreErrors: ['AbortError', 'Unauthorized', 'Invalid password'],
     beforeSend: scrubEvent,
     beforeSendTransaction: scrubEvent,
